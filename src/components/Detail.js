@@ -1,37 +1,66 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { useParams } from "react-router-dom"
+import db from "../firebase"
+
 
 function Detail() {
+  const {id} = useParams();
+  const [ movie, setMovie ] = useState();
+
+  useEffect(() => {
+    //Grab the movie info from DB
+    db.collection("movies")
+    .doc(id)
+    .get()
+    .then((doc) =>{
+      if(doc.exists){
+        //save the movie data
+        setMovie(doc.data());
+      }else{
+        //redirect to homepage
+
+      }
+    })
+  }, [])
+  
+  console.log("Movies is", movie);
+
+
   return (
     <Container>
-      <Background>
-        <img src="https://www.muycomputer.com/wp-content/uploads/2020/10/UCM.jpg"/>
-      </Background>
-      <ImgTitle>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg" />
-      </ImgTitle>
-      <Controls>
-        <PlayButton>
-          <img src="/images/play-icon-black.png"/>
-          <span>PLAY</span>
-        </PlayButton>
-        <TrailerButton>
-          <img src="/images/play-icon-white.png"/>
-          <span>Trailer</span>
-        </TrailerButton>
-        <AddButton>
-          <span>+</span>
-        </AddButton>
-        <GroupWatchButton>
-          <img src="/images/group-icon.png"/>
-        </GroupWatchButton>
-      </Controls>
-      <Subtitle>
-        2012 • 90min • Family, Fantasy, Kids, Animation
-      </Subtitle>
-      <Description>
-        El equipo de superhéroes más espectacular de todos los tiempos con iconos como Anthony Stark / Iron Man, El Increíble Hulk, Thor, Steven Rogers / Capitán América, Clinton Barton / Hawkeye y Natalia Romanoff / Black Widow. Cuando un enemigo inesperado amenaza con poner en peligro la seguridad mundial, Nicholas Fury, Director de la agencia internacional para el mantenimiento de la paz, conocida con el nombre de S.H.I.E.L.D., necesita encontrar urgentemente un equipo que salve al mundo del mayor de los desastres. Así empieza una búsqueda por todo el mundo para reclutar personal.
-      </Description>
+    {movie && (
+      <>
+        <Background>
+          <img alt="image1" src={movie.backgroundImg} />
+        </Background>
+        <ImgTitle>
+          <img alt="image2" src={movie.titleImg} />
+        </ImgTitle>
+        <Controls>
+          <PlayButton>
+            <img alt="image3" src="/images/play-icon-black.png"/>
+            <span>PLAY</span>
+          </PlayButton>
+          <TrailerButton>
+            <img alt="image4" src="/images/play-icon-white.png"/>
+            <span>Trailer</span>
+          </TrailerButton>
+          <AddButton>
+            <span>+</span>
+          </AddButton>
+          <GroupWatchButton>
+            <img alt="image5" src="/images/group-icon.png"/>
+          </GroupWatchButton>
+        </Controls>
+        <Subtitle>
+          {movie.subTitle}
+        </Subtitle>
+        <Description>
+          {movie.description}
+        </Description>
+      </>
+    )}
     </Container>
   )
 }
@@ -67,6 +96,7 @@ const ImgTitle = styled.div `
   min-height: 170px;
   width: 35vw;
   min-width: 200px;
+  margin-top: 60px;
 
 
   img{
@@ -143,6 +173,7 @@ const Description = styled.div `
   font-size: 17px;
   margin-top: 16px;
   color: rgb(249, 249, 249);
+  max-width: 760px;
 
 
 
